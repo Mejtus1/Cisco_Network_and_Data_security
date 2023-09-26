@@ -1,1 +1,73 @@
 ACL
+- access control lists (ACLs) provide a basic level of security for network access
+- without any ACLs configured on a router, all packets pass through the router and onto the network
+
+INTERNET------ROUTER-------------------------ROUTER2----- Reasearch and developemnt(PCs)
+              (DMZ)                                :
+                :                                  :
+                :                                  Human resources(PCs)
+     Web server / Mail server
+- if PC from Human resources wanted to access Computer in Reasearch and development ACL prevents it 
+
+======================================================================================================================================================
+ACL Packet Filter 
+- packet filters look at individual packets in isolation
+- based on the contents of the packet and the configured policy, they decide to permit or deny packets from entering or exiting the router interface
+
+(User Subnet)                                            (Server Subnet)
+ 10.1.1.0/24 -------------Gi0/1------QFP------------------10.10.10.0/24
+                                   (Router)
+
+following ACL applied to the gi0/1 interface:
+access-list 100 permit tcp any 10.10.10.10 eq www
+access-list 100 permit tcp any 10.10.10.10 eq 443
+access-list 100 permit tcp any 10.10.10.11 eq www
+access-list 100 permit tcp any 10.10.10.11 eq 443
+access-list 100 permit tcp any 10.10.10.12 eq ftp
+access-list 100 permit tcp any 10.10.10.12 eq ftp-data
+access-list 100 deny ip any any log
+!
+interface gi0/1
+ip address 10.1.1.1 255.255.255.0
+ip access-group 100 in
+<output omitted>
+- the ACL describes a policy of what is permitted and denied from the user subnet to the server subnet
+1. Clients on the user subnet are permitted to send packets to TCP ports 80 and 443 on the web server
+2. Clients on the user subnet are permitted to send packets to TCP ports 20 and 21 on the FTP server
+3. There is an explicit deny for all other packets as the last entry in the ACL
+- ip access-group command is then used to apply the access list to an interface
+
+======================================================================================================================================================
+ACLs with the Established Option
+- stateless devices such as routers do not track the state of TCP connections
+
+Network A ------------------- R1 ------- e0 ----------- Network B
+
+access-list 102 permit tcp any any established
+!
+interface ethernet0
+ ip access-group 102 in
+!
+- permits TCP packets from any source IP address to any destination IP address as long as either the TCP ACK bit or the TCP RST bit is set
+- there are no ACL restrictions for packets originating from NetA
+-  if a host on NetB attempts to initiate a TCP connection with a host on NetA, the first step of the three-way handshake is denied
+- hosts on NetB cannot use ICMP echo to perform a ping scan of NetA, they can perform an ACK scan
+
+======================================================================================================================================================
+ACLs with the Established Option Example
+
+(Trusted Subnet)                                (Untrusted Subnet)
+ 172.16.1.0/24 ---------------- R1 ------------- FTP Server / Attacker 
+
+access-list extended PermitReturnTraffic 
+  10 permit tcp any any established
+  20 deny ip any any
+
+- clients on the trusted network can establish the FTP control channel by connecting to TCP port 21 on the FTP server
+- first packet, sent from the client to the server, only sets the SYN flag in the TCP header and it presents the clients initial sequence number
+- the server then responds with a packet that has both the SYN bit and the ACK bit set
+- the server presents its initial sequence number and it acknowledges the clients initial sequence number
+- client then completes the three-way handshake with an ACK, acknowledging the server’s initial sequence number
+
+- the ACL will not permit ping via ICMP echo requests
+- Instead of sending an ICMP echo request, the attacker can send a TCP packet with the ACK bit set to a destination address
