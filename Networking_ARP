@@ -1,1 +1,43 @@
-Address Resolution Protocol
+Address Resolution Protocol (ARP)
+- to send data to a destination, a host on an Ethernet network must know the MAC address of the destination
+- ARP provides the essential service of mapping IP addresses to physical addresses on a network
+- MAC address is the unique identifier of the device (usually embedded in the hardware during manufacturing)
+- also referred to as the hardware address or the physical address (48 bits long and is usually represented using hexadecimal notation)
+- groups of digits are commonly separated with colons, dashes, or periods, following three example notations are common and equivalent: 
+54:EE:75:B1:6F:22, 54-EE-75-B1-6F-22, and 54EE.75B1.6F22
+
+Example:
+When a system knows the IP address of its peer but does not know the MAC address, it sends an ARP request. 
+The ARP request specifies the known IP address and is broadcast on the local network. 
+The broadcast is received by all devices on the Ethernet segment. 
+When the target recognizes its own IP address by reading the contents of the ARP request packet, it responds with the required MAC address in its ARP reply. 
+The address resolution procedure is completed when the originator receives the reply packet (containing the required MAC address) from the target. 
+The originator then updates the table containing all the current bindings. 
+This table is called the ARP cache or ARP table. 
+ARP cache is used to maintain a correlation between each IP address and its corresponding MAC address.
+
+=======================================================================================================================================
+The arp -a Command
+
+arp -a
+
+WINDOWS: 
+C:\Users\admin>arp -a
+
+Interface: 10.10.6.204 --- 0x7
+  Internet Address      Physical Address      Type
+  10.10.6.1             0a-07-0a-0a-04-02     dynamic
+  10.10.6.203           0a-06-0a-0a-06-10     dynamic
+  10.10.6.255           ff-ff-ff-ff-ff-ff     static
+  224.0.0.22            01-00-5e-00-00-16     static
+  224.0.0.252           01-00-5e-00-00-fc     static
+  239.255.255.250       01-00-5e-7f-ff-fa     static
+  255.255.255.255       ff-ff-ff-ff-ff-ff     static
+
+LINUX:
+root@Inside-Kali:~#arp -a
+? (10.10.6.204) at 0a:06:0a:0a:06:11 [ether] on eth0
+? (10.10.6.1) at 0a:07:0a:0a:04:02 [ether] on eth0
+root@Inside-Kali:~#
+
+- ARP operates between Layer 2 and Layer 3 of the OSI model
