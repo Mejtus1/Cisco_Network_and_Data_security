@@ -1,1 +1,99 @@
+TCP Protocol
+- incorporates acknowledgments to guarantee delivery, if timely acknowledgment is not received, the sender retransmits the data
+- requiring acknowledgments of received data can cause substantial delays, TCP implements flow control to address this issue
+- rather than acknowledge one segment at a time, multiple segments can be acknowledged with a single acknowledgment segment
+- (RFC 793) Specifies TCP/IP protocol suite
 
+TCP Three way handshake 
+- a three-way handshake opens the TCP connection
+
+Client-----------------r1--------e0------------SERVER
+1. Client sends SYN packet
+                        Server Recieves SYN packet 1.
+                        Server Sends SYN packet    2.
+                        Server Sends ACK packet    2.
+3. Client sends ACK packet 
+
+
+TCP four way handshake 
+Client-----------------r1--------e0------------SERVER
+1. Client sends FIN packet
+                            Server sends ACK packet 2.
+                            Server sends FIN packet 3.
+4. Client sends ACK packet
+
+===================================================================================================================================
+TCP Vulnerabilities
+- TCP SYN flooding
+- TCP session hijacking
+- TCP reset attack
+
+================
+TCP SYN Flooding
+- TCP synchronization (SYN) flooding causes a DoS attack
+- exploits an implementation characteristic of the TCP that can be used to make server processes incapable of responding to any legitimate client's requests
+- TCP connections that have been initiated but not finished are called half-open connections
+- a finite-sized data structure in each host is used to store the state of the half-open connections !!!
+
+ATTACKER (154.54.14.1) -------- Sends SYN (Spoofed) packet (198.168.1.1) ------ > Client (Victim) 187.54.21.47
+Client (Victim) 187.54.21.47 ------- > SYN-ACK to 198.168.1.1 
+ATTACKER (154.54.14.1) -------- Sends SYN (Spoofed) packet (198.168.1.2) ------ > Client (Victim) 187.54.21.47
+Client (Victim) 187.54.21.47 ------- > SYN-ACK to 198.168.1.2
+ATTACKER (154.54.14.1) -------- Sends SYN (Spoofed) packet (198.168.1.3) ------ > Client (Victim) 187.54.21.47
+Client (Victim) 187.54.21.47 ------- > SYN-ACK to 198.168.1.3
+
+- an attacking host can send an initial SYN packet with a spoofed IP address, and then the victim sends the SYN-ACK packet, and waits for a final ACK to complete the three-way handshake
+- if the spoofed address does not belong to a host, then this connection stays in the half-open state indefinitely, thus occupying the finite-sized data structure
+- enough half-open connections to fill up the entire finite-sized data structure, the host denies function 
+
+Possible Solutions
+- setting a time limit for half-open connections, deleting them after the timeout
+-  TCP connection that was established before the attack will have no effect on resources after set time 
+
+TCP SYN Flooding Methods
+
+1. Direct attack 
+ATTACKER ------ SYN packet ------- > Client (Victim)
+- attackers rapidly send SYN segments without spoofing their IP source address
+- very easy to perform, does not involve directly injecting or spoofing packets below the user level of the attacker's operating system 
+- performed by using many TCP connect() calls 
+- to be effective, attackers must prevent their operating system from responding to the SYN-ACK (because any ACKs, resets (RSTs), or ICMP messages will allow the listener to move the TCP out of SYN-RECEIVED) 
+- When detected, this type of attack is very easy to defend against—a simple firewall rule to block packets with the attacker's source IP address is all that is needed
+
+2. Spoofing-based attack
+ATTACKER ----- (spoofed) SYN packet -------- > Client (Victim)
+Client ------- SYN-ACK packet ----- > (spoofed) address
+- attacker needs to be able to form and inject raw IP packets with valid IP and TCP headers
+
+3. Distributed attacks
+
+- the real limitation of single-attacker spoofing-based attacks is that if the packets can somehow be traced back to their true source, the attacker can be easily shut down
+- there could be drones (zombies, Bot-net army of computers) that all send packets to the victim, it would be worse if the packets were spoofed 
+- those bots could change IP address if programmed properly so it would be even harder to find and block them 
+
+=====================
+TCP Session Hijacking
+- oldest type of session hijacking
+- session hijacking is the attempt to overtake an already active session between two hosts
+- with TCP session hijacking, the attacker takes over an already-authenticated host as it communicates with the target
+- targets hosts will show the spoofed IP address 
+
+Hijacking a TCP session requires an attacker to send a packet with a right seq-number, otherwise they are dropped. 
+The attacker has two options to get the right seq-number:
+
+Non-blind spoofing: The attacker can see the traffic that is being sent between the host and the target. 
+Blind spoofing: The attacker cannot see the traffic that is being sent between the host and the target. 
+Blind spoofing is the most difficult type of session hijacking because it is nearly impossible to correctly guess TCP sequence numbers.  
+
+================
+TCP reset attack
+- technique of maliciously killing TCP communications between two hosts
+- regular way that a TCP connection is torn down is by using the FIN bit in the TCP flags
+- TCP connection is terminated by using the FIN bit in the TCP flags or by using the RST bit (RST bit is important for this type of attack)
+
+PC ------- RST ------- > Server
+Server -- ACK RET ---- > PC (Blocked by Firewall on PC or RST packet is sent by spoofed address)
+PC ------- RST ------- > Server
+Server -- ACK RET ---- > PC
+
+===================================================================================================================================
