@@ -1,1 +1,47 @@
+ICMP Protocol
+- connectionless protocol that does not use any port number and works in the network layer
+- ICMP was not designed to transfer data in the same way as TCP and UDP
+- ICMP carries diagnostic messages and report error conditions 
+- often associated with commands such as "ping" (ICMP echo request) or "traceroute" (ICMP TTL expired in transit)
+- some administrators block ICMP to prevent attackers from gathering information about their internal network
+
+ICMP Destination Host Unreachable     = host is unable to reach another host on the local network
+ICMP Destination Network Unreachable  = network link is down
+ICMP Host Administratively Prohibited = traffic is blocked by a firewall
+
+-----
+ICMP Vulnerabilities
+Reconnaissance and scanning: 
+- ICMP can be used to launch information gathering attacks
+- Attackers can use different methods within the ICMP to find out live host, network topology, and OS fingerprinting, and determine the state of a firewall
+
+ICMP unreachables:
+- commonly used by attackers to perform network reconnaissance. 
+- network reconnaissance refers to the act of scanning the target network to gather information about the target
+example: during a protocol or port scan, an ICMP Protocol Unreachable tells an attacker that a protocol is not in use on the target device
+- an ICMP Port Unreachable tells the attacker that a port is not in use on the target device
+
+ICMP mask reply: 
+- allows the router to tell a requesting endpoint what the correct subnet mask is for a given network
+
+ICMP redirects: 
+- router sends an IP redirect to notify the sender of a better route to the destination
+- intended purpose of this feature was for a router to send redirects to the hosts on its directly connected networks
+- attacker use this feature to send an ICMP redirect message to the victim's host, luring the victim's host into sending all traffic through a router that is owned by the attacker. 
+- ICMP redirect attack is an example of an MITM attack, where an attacker will act as the middle man for all communication from the source to the destination.
+
+ICMP router discovery: 
+- ICMP Router Discovery Protocol allows hosts to locate routers that can be used as a gateway to reach IP-based devices on other networks
+- IRDP does not have any form of authentication, it is impossible for end hosts to tell whether the information they receive is valid or not
+- attacker can perform an MITM attack using IRDP
+- spoof the IRDP messages to add bad route entries into a victim’s routing table, victims host will forward the packets to the wrong address/unable to reach other networks
+
+Firewalk: 
+- firewalking is an active reconnaissance technique that employs traceroute-like techniques to analyze IP packet responses to determine: 
+the gateway 
+ACL filters 
+map out the networks
+- firewalking technique works by sending out TCP or UDP packets with a TTL that is one greater than the targeted gateway
+If the gateway allows the traffic, it will forward the packets to the next hop where they will expire and elicit an ICMP Time Exceeded Message
+If the gateway host does not allow the traffic, it will likely drop the packets and the attacker will see no response
 
