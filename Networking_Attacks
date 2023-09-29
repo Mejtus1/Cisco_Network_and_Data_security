@@ -1,0 +1,104 @@
+Attack Surface 
+- total sum of all the vulnerabilities in a given computing device or network that is accessible to the attackers
+
+- attack surface may be categorized into different areas:
+software attack surfaces (open ports on a server) 
+physical attack surfaces (USB ports on a laptop)
+network attack surfaces (console ports on a router) 
+human/social engineering attack surfaces (employees with access to sensitive information)
+
+- smaller attack surface can help make the organization less exploitable, reducing the risk. 
+- greater attack surface makes the organization more vulnerable to attacks, which increases the risk.
+
+Attack surfaces can be divided in to the following four categories:
+
+
+==========================================================================================================================================================================
+Reconnaissance Attacks 
+
+- reconnaissance = attempt to learn more about the intended victim before attempting a more intrusive attack
+- goal = discover the following information about targeted computers or networks
+1.IP addresses, sub-domains, and related information on a target network
+2.Accessible UDP and TCP ports on target systems
+3.The operating system on target systems
+
+---------------------------------------------
+Main subcategories for gathering network data
+- Packet sniffers = capturing data that is passed over network, looking for useful information 
+examples: Wireshark, Ettercap, NetworkMiner
+- Ping sweeps = set of ICMP echo packets, determining which machines are alive to attack them later 
+examples: fping command conducts ping sweeps 
+- Port scans = checks host network for open ports
+insecure protocols: 21(FTP), 23(Telnet), 110(POP3), 143(IMAP), 161(SNMP, SNMPv2)
+examples: Nmap
+- Information queries = resolve hostnames to IP / IP to hostname
+examples: nslookup
+
+-----
+Whois
+- gather public information about a target network from DNS registries
+
+C:\> whois example.com
+<output omitted>
+Registrant Organization: example.com
+Registrant Street: 123 Example Street
+Registrant City: Sometown
+Registrant State/Province: CA
+Registrant Postal Code: 95122
+<output omitted>
+Registrant Phone: +1.5555555555
+<output omitted>
+Registrant Email: domainadmin@example.com
+<output omitted>
+Administrative Name: Some Person
+<output omitted>
+Name Server: ns1.example.com
+Name Server: ns2.example.com
+Name Server: ns3.example.com
+
+--------------------
+Shodan Search Engine
+- help an attacker identify a specific device
+
+---------------
+Robots.txt File
+- attacker can gather a lot of valuable information from a target's website
+
+------------------
+Using Nmap example 
+root@kali: nmap -v sn 192.168.80.131 (port scanning and reconnaissance of our own network)
+
+Starting Nmap 7.01 ( https://namp.org ) at 2016-09-20 11:43 EDT
+Failed to resolve "sn".
+Initiating ARP Ping Scan at 11:44
+Scanning 192.168.80.131
+Completed ARP Ping Scan at 11:44, 0.03s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 11:44
+Completed Parallel DNS resolution of 1 host. at 11:44, 0.00s elapsed
+Initiating SYN Stealth Scan at 11:44
+Scanning 192.168.80.131 (1000 ports)
+Discovered open port 80/tcp on 192.168.80.131
+Discovered open port 139/tcp on 192.168.80.131
+Discovered open port 445/tcp on 192.168.80.131
+Discovered open port 5900/tcp on 192.168.80.131
+Discovered open port 53/tcp on 192.168.80.131
+Discovered open port 111/tcp on 192.168.80.131
+Discovered open port 22/tcp on 192.168.80.131
+Discovered open port 21/tcp on 192.168.80.131 
+Discovered open port 3306/tcp on 192.168.80.131
+Discovered open port 25/tcp on 192.168.80.131
+Discovered open port 2121/tcp on 192.168.80.131
+Completed SYN Stealth Scan at 11:44, 0.05s elapsed (1000 total ports)
+Nmap scan report for 192.168.80.131
+Host is up (0.00015s latency).
+Not shown: 977 closed ports
+PORT
+21/tcp	open  ftp                        !!not secure port
+22/tcp	open  ssh	
+23/tcp	open  telnet                     !!telnet insecure port open
+25/tcp  open  smtp
+53/tcp	open  domain
+80/tcp  open  http	                 !!http open 
+445/tcp open  microsoft-ds
+MAC Address: 00:0C:29:AE:2E:0C (VMware)
+
