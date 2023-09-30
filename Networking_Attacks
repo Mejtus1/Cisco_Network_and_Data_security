@@ -1,17 +1,59 @@
+==========================================================================================================================================================================
 Attack Surface 
 - total sum of all the vulnerabilities in a given computing device or network that is accessible to the attackers
-
 - attack surface may be categorized into different areas:
-software attack surfaces (open ports on a server) 
-physical attack surfaces (USB ports on a laptop)
-network attack surfaces (console ports on a router) 
-human/social engineering attack surfaces (employees with access to sensitive information)
+1.software attack surfaces (open ports on a server) 
+2.physical attack surfaces (USB ports on a laptop)
+3.network attack surfaces (console ports on a router) 
+4.social engineering attack surfaces (employees with access to sensitive information)
 
 - smaller attack surface can help make the organization less exploitable, reducing the risk. 
 - greater attack surface makes the organization more vulnerable to attacks, which increases the risk.
 
 Attack surfaces can be divided in to the following four categories:
 
+
+1.The network attack surface 
+- all vulnerabilities that are related to ports, protocols, channels, devices (smart phones, laptops, routers, and firewalls), services, network applications (SaaS)
+- inherently insecure protocols , pass data unencrypted = Telnet, FTP, HTTP, SMTP / Network File Systems = NFS, SMB,
+- Remote memory dump services = netdump = contents of memory over network unencrypted(can contain passwords, database entries, other sensitive information) 
+- finger and rwhod = reveal information about users of the system 
+
+2.The software attack surface 
+- is the complete profile of all functions in any code that is running in a given system that is available to an unauthenticated user 
+- an attacker or a piece of malware can use various exploits to gain access and run code on the target machine
+- software attack surface is calculated across many different kinds of code, including:
+applications, 
+email services, 
+configurations, 
+compliance policy, 
+databases, 
+executables, 
+DLLs, 
+web pages, 
+mobile apps, 
+device OS ... 
+- unpatched software, such as Java, Adobe Reader, and Adobe Flash, also provide greater software attack surface because they are widely used
+- publicly known cybersecurity vulnerabilities are listed in CVE libraries. 
+
+3.The physical attack surface 
+- is composed of the security vulnerabilities in a given system that are available to an attacker in the same location as the target
+- physical attack surface is exploitable through inside threats such as: 
+rogue employees, 
+social engineering ploys, 
+intruders who are posing as service workers
+- external threats include password retrieval from: 
+carelessly discarded hardware, 
+passwords on sticky notes,
+physical break-ins 
+
+4.The social engineering attack surface 
+- usually takes advantage of human psychology
+Examples:
+- fake IT calls, posing as an employee
+- dropping a flash drive in a parking lot 
+- trojan horses inside website
+- trojan horses inside phising email 
 
 ==========================================================================================================================================================================
 Reconnaissance Attacks 
@@ -101,4 +143,74 @@ PORT
 80/tcp  open  http	                 !!http open 
 445/tcp open  microsoft-ds
 MAC Address: 00:0C:29:AE:2E:0C (VMware)
+
+==========================================================================================================================================================================
+Attack Vectors
+- paths or means by which the attackers gain access to a resource for malicious purposes 
+- attack vectors enable the attackers to exploit system vulnerabilities
+- attack vector can be even human element inside the system 
+
+Common security threats include the following:
+
+Reconnaissance: 
+- attacker attempts to gather information about targeted computers or networks that can be used as a preliminary step toward a further attack seeking to exploit the target system
+What operating system is on the target systems? 
+Is there a firewall? 
+Which ports are available? 
+Which content management system (CMS) does the system run? 
+
+Known vulnerabilities: 
+- attacker finds weaknesses in hardware and software and then exploits those vulnerabilities
+
+SQL injection: 
+- manipulating SQL database queries that web application sends
+- application vulnerability = not properly sanitized user input
+
+Phishing: 
+- spam email to recipients 
+- can contain linnk to malicious site, drive by download 
+
+Advanced Persistent Threat:
+- is a covert cyber attack on a computer network where the attacker gains and maintains unauthorized access to the targeted network, and remains undetected for a significant period 
+- between infection and remediation, the hacker will often monitor, intercept, and exfiltrate sensitive data from the network
+- APTs intend to exfiltrate or steal data, and not cause a network outage, cause a denial of service, or infect systems with malware
+- APTs often use social engineering tactics or exploit software vulnerabilities, and usually target organizations with high value information
+
+Malware: 
+- short for malicious software, 
+- malware may be: computer viruses, worms, Trojan horses, dishonest spyware, and malicious rootkits
+
+Weak authentication: 
+- poorly designed or poorly implemented authentication mechanisms
+
+Other common threats
+- such as: 
+security misconfiguration, 
+cross-site scripting, 
+cross-site request forgery,
+HTTP header manipulation
+
+==========================================================================================================================================================================
+Access Attacks
+- is an attempt to access another user account or network device through improper, unauthorized means 
+- access attacks exploit known vulnerabilities in authentication services, FTP services, and web services to gain entry to web accounts, confidential databases, and other sensitive information. 
+- after gaining access to your network with a valid account, an attacker can obtain lists of valid user and computer names and network information, modify server and network configurations, including access controls and routing tables, and modify, reroute, or delete your data
+
+prominent types of attacks:
+
+Password attack 
+- is typically used to obtain system access. 
+- access is obtained = the attacker is able to read, modify, or delete data, and add, modify, or remove network resources
+password cracking tools: "John the ripper" "Cain and Abel" 
+
+Spoofing/masquerading attack 
+- a situation in which one person or program successfully masquerades as another by falsifying data and gaining illegitimate access
+
+Session hijacking attack 
+- in which the session established by the client to the server is taken over by a malicious person or process
+
+Malware 
+- used to infect the victim's system with malicious software
+
+==========================================================================================================================================================================
 
