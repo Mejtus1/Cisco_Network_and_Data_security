@@ -1,1 +1,19 @@
+UDP Protocol
+- is a connectionless transport-layer protocol that provides an interface between IP and upper-layer processes
+- no reliability, flow-control, or error-recovery functions to IP
+- less network overhead because of smaller packets (source, destination port numbers, UDP checksum, segment length
+- useful in situations where reliability is not that important 
+- ports distinguish different applications using UDP at same machine 
+- applications using UDP = NFS, SNMP, DNS, TFTP, online games, streaming and VOIP
 
+UDP Vulnerabilities
+- UDP is vulnerable because the checksum, which is an optional field that is used to detect transmission errors, is easy to recompute for attackers who want to alter application data
+- no algorithm for verifying the sending packet source
+- UDP can be spoofed, no guarantee of right source IP 
+- SNMPv1 and DNS use UDP as transport protocol = they are voulnerable to eavesdropping (if  we know the format and there is no encryption or breakable encryption)
+- most UDP attacks involve exhaustion of resource 
+
+Most attacks involving UDP relate to exhaustion of some shared resource (buffers, link capacity, and so on), or exploitation of bugs in protocol implementations, causing system crashes or other insecure behavior.
+DOS attacks: 
+- exhaustion of shared resource(buffers, link capacity) = UDP flood attack(triggered by many UDP packets with random ports, victim will reply wil ICMP unreachable port, IP is usually spoofed in this scenario)
+- exploitation of bugs in protocol(system crashes) = SQL Slammer worm 2003(software vulnerability, UDP port 1434 is used for multiple instances of Microsoft SQL server, successfull exploit of vulnerabilities lets attackers execute code on the system, thus causing havoc)
