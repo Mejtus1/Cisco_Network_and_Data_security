@@ -312,3 +312,26 @@ DDOS attack
 - malicious bot is self-propagating malware that is designed to infect a host and connect back to the command-and-control server
 
 ==========================================================================================================================================================================
+Reflection and Amplification Attacks
+- type of DoS attack 
+- attacker sends a flood of protocol request packets to various IP hosts
+- source IP of packets are spoofed (IP source is IP of victim)
+- IP hosts that receive these packets become "reflectors"
+- reflectors respond by sending response packets to the spoofed address (the target), thus flooding the unsuspecting target
+
+Amplification attack = request packets that are sent by the attacker solicit a larger response
+- small forged packet elicits a large reply from the reflectors
+
+Common example of reflection and amplification attack is reflection 
+		    (1)												(2)
+(attacker)    From 10.0.1.15								   :- PC 1 	ICMP gets to the target PCs
+	 ICMP echo request packet							   :- PC 2	
+Attacker ------------------------> INTERNET -------------------- r1 -----> DS3 connection  :- PC 3 
+					:						   :- PC 4 
+					:					 	   :- PC 5		   (3)
+					:t1 connection				   	   :- PC 6      Target PCs, send ICMP echo 	
+				 Notebook (victim) 10.0.1.15 <---------------- INTERNET --------------------- to the 10.0.1.15
+					
+- smurf attacks can be mitigated and detected "no ip directed-broadcast interface configuration command" on CISCO ios software 
+
+==========================================================================================================================================================================
