@@ -213,4 +213,102 @@ Malware
 - used to infect the victim's system with malicious software
 
 ==========================================================================================================================================================================
+Man-in-the-Middle Attacks
 
+- exploit inherent vulnerabilities of TCP/IP protocol at various layers
+- it can be completely invisible to the victims, making it difficult to detect and stop 
+- system that has the ability to view the communication between two systems 
+- main objective is to steal the information being transmitted between two parties
+
+Examples of OSI layer MITM attacks include the following:
+
+Physical layer: 
+- tap someone's physical connection, and send all packets to the MITM
+
+Data link layer: 
+- use ARP poisoning to cause victims to send all their packets to the MITM
+
+Network layer: 
+- manipulate packet routing to route all the packets to the MITM
+
+Session layer: 
+The SSL/TLS MITM de-crypts, examines, then re-encrypts the HTTP over SSL/TLS traffic 
+For this attack to work, the victim's web browser must trust the certificate that is presented by the SSL/TLS MITM which can be caused by first injecting some malware into the victim's web browser. ¨¨
+
+Application layer: 
+- Man-in-the-browser attack = begins with malware infection, waits in victims browser, with specific website visit the malware goes into action (triggering entering sensitive information
+
+										IP Address    MAC address
+										10.1.1.3  	  D 
+			      10.1.1.5						10.1.1.4	  B
+			 	 PC						10.1.1.5	  D 
+			    MAC address D 						
+				  :
+			          :
+				  :
+     PC			          :			    PC 
+MAC address A -------------------r1--------------------- MAC address B
+  10.1.1.3						   10.1.1.4
+
+- attacker poisons the ARP caches of hosts A and B so that each host will send all its packets to the attacker when communicating to the other host
+
+- MITM attack can be passive or active
+- passive attacks, attackers steal confidential information
+- active attacks, attackers modify data in transit or inject data of their own
+- ARP cache poisoning attacks often target a host and the host’s default gateway 
+- ARP cache poisoning puts the attacker as a MITM between the host and all other systems outside of the local subnet
+
+ARP poisoning: 
+- attacker poisons ARP cache of two devices with MAC address of attackers NIC 
+- each victim sends packets to attacker when communicating
+- allows attacker to monitor communication and forward it after interception 
+
+ICMP-based MITM attack: 
+- spoofed ICMP redirect message between victim client and server
+- spoofed ICMP is routed through attacker router
+
+DNS-based MITM attack: 
+- falsifying DNS information in victims DNS table
+DNS table 8.8.8.8 google.com 
+false DNS table 14.5.7.8 (attackers website IP) google.com 
+
+DHCP-based MITM attack: 
+- helps attacker gain information about whole network 
+- used to further steal information 
+
+==========================================================================================================================================================================
+Denial of Service and Distributed Denial of Service
+- DoS attacks attempt to consume all the critical computer or network resources to make them unavailable for valid use
+
+
+					:--PC1 .
+					:	.
+					:--PC2	 .
+					:	  .
+Attacker --- Command and Control -------:--PC3	   .
+					:	    :-------r1---> Victims infrastructure	
+					:--PC4     .
+					:	  .
+					:--PC5   .
+					:	.
+					:--PC6 .
+TCP SYN flood 
+- exploits TCP three way handshake 
+- victim host sends a SYN-ACK back to the random source address and adds an entry to the connection table
+- SYN ACK is destinated to non existed host, the three way handshake is never finished and stays open which consumes resources (until it expires)
+- by generating TCP SYN packets from random IP addresses at a rapid rate, the attacker can fill up the connection table and deny TCP services
+
+DOS ping of death
+- fragment offset indicating a full packet size of more than 65,536 bytes
+- vulnerable machine receives fragment, will attempt to set up buffers to accommodate packet reassembly, out-of-bounds request causes the system to crash or reboot
+- MODREN COMPUTER sysetms have mostly patched ping of death 
+
+ICMP flood 
+- attacker overwhelms the targeted resource with ICMP packets (echo request (ping)), to saturate and slow down the victim's network infrastructure
+
+DDOS attack 
+- many of malicious hosts controlled through command and control 
+- bots are sent to the victims 
+- malicious bot is self-propagating malware that is designed to infect a host and connect back to the command-and-control server
+
+==========================================================================================================================================================================
