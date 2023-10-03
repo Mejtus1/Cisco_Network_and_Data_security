@@ -335,4 +335,39 @@ Attacker ------------------------> INTERNET -------------------- r1 -----> DS3 c
 - smurf attacks can be mitigated and detected "no ip directed-broadcast interface configuration command" on CISCO ios software 
 
 ==========================================================================================================================================================================
+Load Balancing
+- in todays data centers are thousands of web, application and database servers = each is capable of serving multi-Gbps traffic
+- load balancers need to scale higher than multi-Gbps speeds
+- load balancing efficiently distributes incoming traffic across a group of servers
+- load balancing allows servers to add remove servers without interrupting network traffic
+
+Algorithms that typical load balancers use include the following:
+  Round robin: Requests are distributed across the group of servers sequentially
+  Least connections: A new request is sent to the server with the fewest current connections to clients
+  Least time: Requests are sent to the server according to a formula that combines the fastest response time and fewest active connections
+  Hash: Requests are distributed based on a hash value, such as the source and destination IP address
+
+==========================================================================================================================================================================
+Spoofing Attacks
+- anytime an attacker injects traffic that appears to be sourced from a system other than the attacker's system itself
+- spoofing is not specifically an attack, but spoofing can be incorporated into various types of attacks
+
+Attacker 172.25.9.7 sends a packet to server 10.1.2.3 but specifies 192.168.6.4 as the source address of the packet
+Server 10.1.2.3 sends its response packet to what it believes to be the originating system, host 192.168.6.4
+
+172.25.9.7             SOURCE: 192.168.1.2, DESTINATION: 10.1.2.3
+Attacker -----------------------------PACKET------------------------------> Server 10.1.2.3
+											  :
+											  :
+											  :
+								   192.168.1.2 <----------:
+						    non existent IP on local network / ranodom PC 
+
+Spoofing types: 
+- IP address spoofing 
+- MAC address spoofing 
+- Application spoofing (DHCP)
+
+==========================================================================================================================================================================
+
 
