@@ -1,1 +1,48 @@
 NAT
+
+- defined in RFC 1631
+- operates in Layer 3 forwarding devices to provide address simplification and conservation
+- connect networks using private RFC 1918 network addresses to the public Internet
+- NAT translates the private addresses that are used in the internal network into public addresses that can be routed across the Internet
+- use only one address for the entire network to the outside world thus effectively hides the internal network, thus providing additional security
+- multiple device types can be configured to perform NAT services. Although firewalls are most common, routers and some Layer 3 switches are also capable of deploying this service
+
+list of NAT terms:
+Inside local address: - IPv4 address that is assigned to a host on the inside network (RFC 1918 reserved private IPv4 address spaces)
+Inside global address: - globally routable IPv4 address that represents one or more inside local IPv4 addresses to the outside world
+Outside local address: - IPv4 address of an outside host as it appears to the inside network (can be allocated from a routable address space)
+Outside global address: - IPv4 address that is assigned to a host on the outside network by the host owner (globally routable address or network space)
+
+-----------------------------:
+Server-----:                 :
+10.0.0.2   :                 :
+           :----------> 10.0.0.1 >----------NAT Table-------> 209.165.201.10 >-------- INTERNET 
+           :                 :                  :
+PC---------:                 :                  :
+10.0.0.1                     :                  :---> Inside Local IPv4 address / Inside Global IPv4 address
+-----------------------------:                        10.0.0.1                  /            209.165.201.10
+                                                      10.0.0.2                  /            209.165.201.11
+benefits
+- eliminates the need to readdress all hosts that require external access, saving time and money
+- conserving IPv4 addresses = internal hosts can use same IPv4 non routable address and the distinction between them can be made throught ports
+
+
+-----------------------------:
+Server-----:                 :
+10.10.10.12:                 :
+           :----------> 10.0.0.1 >----------NAT Table-------> 203.0.113.2 >-------- INTERNET ---------> HOST B 198.51.100.3
+           :                 :                  :
+PC---------:                 :                  :
+10.10.10.11                  :                  :---> Inside Local IPv4 address / Inside Global IPv4 address
+-----------------------------:                        10.10.10.12               /            203.0.113.2
+                                                      10.10.10.11               /            203.0.113.2
+
+- firewall that is translating the source address as the packet is forwarded from inside to outside
+- host 10.10.10.11 sends a packet to Host B
+- router receives the packet and checks its NAT table. It finds an entry to translate 10.10.10.11 to 203.0.113.2.
+if there was no entry in the table, the router would check the NAT rules to see if there is a rule specifying a dynamic translation
+if there was such a rule, a new entry would be created
+- router replaces the inside local address 10.10.10.11 with the inside global address 203.0.113.2 and forwards the packet
+- host B receives the packet with 203.0.113.2 as the source address. When Host B replies, it specifies 203.0.113.2 as the destination address
+- router receives the reply packet and checks its NAT table, it finds the entry that is associated with the inside global IPv4 address 203.0.113.2.
+- router replaces the inside global address 203.0.113.2 with the inside local address 10.10.10.11 and forwards the packet
