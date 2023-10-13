@@ -1,0 +1,38 @@
+DNS
+- provides mappings between the hostnames and IP addresses, or other mappings
+- can map hostnames, such as host.example.com, to IP address, such as 192.168.40.100 (or the IPv6 address)
+- enables access to the network resources by their names instead of having to remember their IP addresses
+- primarily uses UDP port 53 for DNS queries and responses
+- DNS queries consist of a UDP request from the client followed by a UDP response from the DNS server
+- TCP port 53 is used when the DNS response data size exceeds 512 bytes, or for tasks such as zone transfers
+(Zone transfer is a type of DNS transaction. Zone transfer is used by the DNS administrators to replicate the DNS databases across a set of DNS servers.)
+
+DNS Distributed Database
+- globally distributed, scalable, hierarchical, and dynamic database
+- no single DNS server on the Internet contains the entire DNS database
+- authority over the different parts of the DNS database is delegated to different DNS servers in the Internet 
+- DNS database is composed of a hierarchical domain name space that contains a tree-like data structure of linked domain names (nodes)
+
+Diagram illustrates a sample of the DNS hierarchy starting from the root (.)
+           :-- .arpa :--- in.addr
+           :         :--- .ip6
+           :
+           :-- .com -- .cisco :-- www
+root "." --:                  :-- tools
+           :-- .net
+           :
+           :-- .org :-- .isc ----------: .sie
+           :        :-- .secdev        : www
+           :        :-- .icasi         : .oarc ---- .jabber
+           :        :-- .iana
+           :-- .gov
+           :
+           :-- .us :-- tx. -- .state -- .www
+           :
+           :-- .uk
+
+- each FQDN is composed of one or more labels. Labels are separated with a dot (.), and may contain a maximum of 63 characters
+- FQDN may contain a maximum of 255 characters, including the dot (.)
+- labels are constructed from right to left, where the label at the far right is the top-level domain (TLD) for the domain name
+- .com is the TLD for http://www.cisco.com because it is the label furthest to the right
+
