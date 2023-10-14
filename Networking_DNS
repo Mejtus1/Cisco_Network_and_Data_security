@@ -1,3 +1,4 @@
+---
 DNS
 - provides mappings between the hostnames and IP addresses, or other mappings
 - can map hostnames, such as host.example.com, to IP address, such as 192.168.40.100 (or the IPv6 address)
@@ -7,6 +8,8 @@ DNS
 - TCP port 53 is used when the DNS response data size exceeds 512 bytes, or for tasks such as zone transfers
 (Zone transfer is a type of DNS transaction. Zone transfer is used by the DNS administrators to replicate the DNS databases across a set of DNS servers.)
 
+
+------------------------
 DNS Distributed Database
 - globally distributed, scalable, hierarchical, and dynamic database
 - no single DNS server on the Internet contains the entire DNS database
@@ -35,4 +38,207 @@ root "." --:                  :-- tools
 - FQDN may contain a maximum of 255 characters, including the dot (.)
 - labels are constructed from right to left, where the label at the far right is the top-level domain (TLD) for the domain name
 - .com is the TLD for http://www.cisco.com because it is the label furthest to the right
+
+
+------------
+DNS Mappings
+- DNS can perform various other types of mapping(than IPs to Hostnames), each mapping type is defined in a different type of resource record (RR)
+(RR) A record = IPv4 DNS address record = maps a hostname to an IPv4 address 
+(RR) MX record = domain name to a list of mail servers for that domain
+(RR) NS record = name server for the domain
+(RR) AAAA record = hostnames to the IPv6 address of the host
+(RR) PTR record = "canonical name" = most common use implementing reverse DNS lookups, mapping an IP address to the hostname
+(RR) NS record = NS record identifies the DNS servers that are responsible (authoritative) for a zone
+(RR) CNAME record = is used to specify that a domain name is an alias for another domain name, which is the "canonical" domain name
+(RR) TXT record = associate any arbitrary text with a hostname, (only used in specific cases such as Domain Keys Identified Mail, used as a method to detect email spoofing)
+(RR) SOA record = identifies the name server that is the best source of information for the data within the zone
+
+
+Microsoft DNS server
+- the domain name is secure-x.local, hq-srv.secure-x.local host is the name server for the secure-x.local domain, as configured by the NS record. 
+- A records are used to map the hostname to the IP address, hq-srv hostname is mapped to the 192.168.1.2 IP address
+- FQDM are hq-srv.secure-x.local and inside-srv.secure-x.local
+
+(same as parent folder)           Start of Authority(SOA)           [251], hq-srv.secure-x.local.hostmaster.secure-x...          static
+(same as parent folder)           Name Server (NS)                  hq-srv.secure-x.local.                                       static
+(same as parent folder)           Host (A)                          192.168.1.2                                                  3/10/2022 7:00:00 AM
+asa                               Host (A)                          192.168.1.1                                                  static     
+cda                               Host (A)                          192.168.1.4                                                  static     
+dmz                               Host (A)                          172.16.1.2                                                   static           
+dmz-srv                           Host (A)                          172.16.1.2                                                   static
+hq-srv                            Host (A)                          192.168.1.2                                                  static            
+Inside-PC                         Host (A)                          192.168.1.3                                                  static            
+inside-srv                        Host (A)                          192.168.1.2                                                  static     
+IPXCX                             Host (A)                          192.168.1.5                                                  static     
+P13-Inside-PC                     Host (A)                          192.168.1.3                                                  5/312022 7:00:00 AM     
+PRSM                              Host (A)                          192.168.1.6                                                  static     
+
+----------------
+nslookup UTILITY 
+- available on Windows and Linux
+- querying the DNS database for domain names, IP address mapping, or any specific DNS record
+
+A record: 
+Using the nslookup utility, it shows that the dmz.secure-x.public host that is resolved to the IP address of 192.0.2.50 from the 209.165.200.233 DNS server,
+209.165.200.233 DNS server is not the authoritative DNS server for the secure-x.public domain
+------------------------------------:
+C:\Users\Adninistrator>nslookup     :       
+Default Server: ww.sp.public        :   
+Address: 209.165.208.233            :
+                                    :
+>dnz.secure-x.public                :       
+Server: ww.sp.public                :       
+Adress: 209.165.208.233             :
+                                    :
+Non-authoritative answer:           :
+Name: dnz.secure-x.Public           :
+Address: 192.0.2.50                 :
+------------------------------------:
+
+PTR record: 
+- set q=ptr option can be used to examine the PTR record
+- PTR record from DNS shows 192.0.2.50 resolves to the various hostnames in the secure-x.public domain, such as dmz.secure-x.public
+-------------------------------------------------------:
+C:\Users\student >nslookup                             :
+Server: sp-srv.sp.public                               :
+adresa: 209.165.208.233                                :
+                                                       :
+> set q-ptr                                            :
+> 192.0.2.50                                           :
+server: sp-srv.sp.public                               :
+Address: 209.165.208.233                               :
+                                                       :
+Non-authoritative answer:                              :
+58.2.0.192.in-addr.arpa name = ftp.secure-x.public     :
+58.2.8.192.in-addr.arpa nane ww.secure-x.public        :
+58.2.8.192.in-addr.arpa nanens.secure-x.public         :
+58.2.8.192.in-addr.arpa nane dnz.publicure-x           :
+-------------------------------------------------------:
+
+MX record: 
+- set q=mx option can be used to examine the MX record. 
+- the MX record from DNS shows that 192.0.2.55 is the mail server for the secure-x.public domain.
+--------------------------------------------------------------------------------:
+C:\Users\Administrator>nslookup                                                 :
+Default Server: sp-srv.sp.public                                                :
+Address: 209.165.200.233                                                        :
+                                                                                :
+> set q=mx                                                                      :
+> secure-x.sp.public                                                            :
+Server: sp-sro.sp.public                                                        :
+Address: 209.165.200.233                                                        :
+                                                                                :
+Nonauthoritative answer:                                                        :
+secure-x.public MX preferencia 10, mail exchanger = mail.secure-x.public        :
+                                                                                :
+mail.secure-x.public  internet address 192.0.2.55                               :
+>                                                                               :
+--------------------------------------------------------------------------------:
+
+
+---------------
+DNS Terminology
+
+Resource record: 
+- defines the DNS data types that are stored in the DNS database
+- most common types of RRs: (Start of Authority (SOA), IP addresses (A and AAAA), SMTP mail servers (MX), name servers (NS), 
+pointers for reverse DNS lookups (PTR), and domain name aliases (CNAME))
+- an RR is composed of the following fields: NAME, TYPE, CLASS, TTL, RDLENGTH, and RDATA.
+
+Stub DNS resolver:
+- client device operating systems or applications use very simple stub DNS resolvers
+- typically, stub DNS resolvers issue DNS queries to the DNS recursive resolvers—not only for DNS information about the internal resources, 
+but also for DNS information about publicly registered domains.
+DNS resolver
+- client side of DNS is called a DNS resolver
+- DNS resolver sending a DNS query to a DNS server requesting the information that is defined in an RR
+
+DNS recursie resolver: 
+- DNS server that processes the clients DNS queries
+- DNS recursive server queries the necessary authoritative DNS servers for the RR information(DNS recursive server provides the 
+answer back to the DNS client) 
+
+Open DNS recursive resolvers:
+- allow queries from all IP addresses and are exposed to the Internet
+- public open DNS recursive resolvers include GoogleDNS (8.8.8.8) Cisco OpenDNS (208.67.222.222 and 208.67.220.220) 
+- attackers use OPEN DNE recursive resolvers for amplification attacks 
+
+Authoritative DNS server: 
+- responsible for all the domains RRs
+- provide authorithative responses to DNS recursive resolvers
+- are exposed to the internet
+
+DNS zones: 
+- DNS is partitioned into DOMAINS nad ZONES
+- zone is is a contiguous portion of the domain name space in the DNS for which the administrative responsibility has been delegated to a single manager
+- zone is the authoritative source for information about each domain that is included in the zone
+- zone file is a text file that describes a DNS zone, and contains a list of the zone's resource records
+
+The following figure shows the DNS query/response flow between the stub DNS resolver, the DNS recursive resolver, and the authoritative DNS server.
+         :----------------------------------:--------:---------------------------------------:
+     DNS Client                        DNS Recursive Resolver                         Authoritative DNS server 
+(Stub DNS resolver)
+Client   :---------1. DNS query--------- > DNS Recursive -----------1. DNS query ------> Authoritative DNS 
+Client   <---------2. DNS query--------- < DNS Non-Authoritative <----------2. DNS query ------< Authoritative DNS 
+                                                  Response                                           Response    
+
+============================================================================================================================================================
+============================================================================================================================================================
+DDNS = Dynamic DNS 
+- allows the automated discovery and registration of the client system's public IP addresses
+- DDNS client program on the end-user device in the private network connects to the DDNS provider's with a unique login name
+- DDNS provider uses the name to link the discovered public IP address with a hostname in the domain name system
+- mainly used in homes, allows to access devices in home from anywhere in the world even if IP address changes (home address can change)
+- if IP address is changed DDNS will update IPs and map it to hostname automatically (myhomepc.ddns.org = 10.15.80.4, if IP changes DDNS updates it)
+- DDNS provider maps a new subdomain (based on a list of existing domains that are owned by the DDNS provider) to the DDNS client's dynamic IP address 
+that is currently provisioned by the ISP
+
+-------------------
+Recursive DNS Query
+- DNS recursive resolver receives a DNS query for information for which it is not authoritative, it will recursively query the DNS architecture for the authoritative DNS server information
+- once DNS recursive resolver has obtained the requested information from the authoritative DNS server, 
+it will provide that information to the original DNS resolver using a DNS response message
+- in this case, the resource record will be non-authoritative (since the recursive DNS resolver is not authoritative for the requested information)
+- recursive DNS request requires more processing by the DNS server, when compared to a nonrecursive DNS request
+
+- DNS recursive resolver may also have knowledge about the requested information that is stored in its local DNS cache.
+- If requested information is present in the DNS cache, then recursive DNS resolver will respond with locally cached resource record information
+
+- following figure illustrates the recursive DNS process (assuming that nothing has been cached in the DNS recursor local DNS cache yet):
+1. DNS resolver (DNS client) sends a query message to the DNS recursor (DNS recursive resolver) asking for the address of www.cisco.com
+2 DNS recursor sends a query message to the root name servers looking for the .com domain name space
+3. root name servers send a DNS referral response message to the DNS recursor informing it to ask the generic Top-Level Domain (gTLD) name 
+servers for the .com domain name space
+4. DNS recursor sends a query message to the gTLD name servers looking for the .cisco.com domain name space
+5. gTLD name servers send a DNS referral response message to the DNS recursor informing it to ask the .cisco.com name servers, 
+ns1.cisco.com or ns2.cisco.com, about this domain name space
+6. DNS recursor sends a query to ns1.cisco.com or ns2.cisco.com, asking for www.cisco.com
+7. .cisco.com name servers, ns1.cisco.com or ns2.cisco.com, send an authoritative DNS query response message to the DNS recursor with 
+the A (address) RR information for www.cisco.com.
+8. DNS recursor sends a DNS query response message to the DNS resolver with the A (address) RR information for www.cisco.com
+
+
+
+--------------
+DNS Tunneling
+- DNS tunnel can be used for command and control, data exfiltration, or tunneling of any IP traffic
+- DNS tunneling does not need to be stealthy, relying on the fact that DNS is often unmonitored. 
+
+- to create a DNS tunnel, the attacker creates a DNS server that resolves a domain name created for the attack (acaerlxwsr.badguydomain.bad)
+- DNS tunneling server will have a special logical interface configured via a DNS tunneling tool such as Iodine
+- target system will also have a logical interface allowing it to tunnel IP traffic out to the Internet
+- DNS tunneling server will be the authoritative name server for the domain that will be used, an Internet-accessible server that the attacker control 
+- once set up, data communication is encoded by one of various methods and then placed as the payload of the DNS communications
+- DNS tunneling uses the malicious server as the authoritative name server for the specific domain that is created for this attack
+- tunnel is established between the infected client and the attacker controlled authoritative name server through the DNS resolver
+
+- benefit of DNS tunneling is that, as mentioned, it is not often detected as DNS traffic is normal and expected on a network
+- drawback is slow speed. Further, DNS tunneling does not usually allow for communication to be initiated from the server to the client 
+(this traffic should be blocked by the firewall)
+
+- examining payloads for unusual content, packet size, frequency of requests, 
+- and looking for unusual hostnames are a few techniques to discover instances of DNS tunneling
+
+
+
 
