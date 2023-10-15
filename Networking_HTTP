@@ -1,1 +1,283 @@
+----
+HTTP 
 
+- HTTP is a client/server protocol where the web browser is the client and the web server is the server
+- HTTP is a stateless application layer protocol
+- default port for HTTP is TCP port 80, but other ports can be used
+
+
+Web Browser ------------ 1. HTTP request to TCP port 80 ----------- > Web Server
+Web Browser ------------ 2. HTTP Response from TCP port 80 <--------- Web Server
+
+- client's web browser sends an HTTP request to the web server, HTTP request has three parts:
+1. HTTP request method, URI, and the HTTP protocol name and version
+2. HTTP request headers are used to define the operating parameters of the HTTP transaction, and to provide information about the client
+3. HTTP request body
+
+The web server sends an HTTP response to the client’s web browser, HTTP response has three parts:
+1. HTTP protocol name and version, and the status code
+2. HTTP response headers are used to define the operating parameters of the HTTP transaction, and to provide information about the web server
+3. HTTP response body
+
+
+-----------
+URI and URL
+
+- URL is a subset of a URI that defines the location of a specific resource and how to retrieve it
+- part that makes a URI a URL is inclusion of the “access mechanism/protocol” or “network location,” such as http://, https://, and ftp://, the http://www.example.com/index.html URL will request the file that is named index.html in the root directory of the www.example.com web server
+
+http://www.example.cisco.com:80/video?docid=96673783583808&hl=en#00h01m15s
+- Protocol: http (can also be https, ftp, and so on)
+- Host: www.example.cisco.com
+- Host (or Prefix) = www.
+- Subdomain = example.cisco.com
+- Domain = cisco.com
+- Top-Level Domain = .com
+- Port: If the port is not specified, port 80 is assumed
+- Path: /video. (refers to a file or location on the web server, example = directory structure)
+- Parameters: ?docid=96673783583808&hl=en 
+(docid=96673783583808 parameter in this example reference a specific video file in the path) 
+(hl=en parameter specify the language, for example, setting the video subtitle to English)
+- URL parameters:
+(“query strings" contain extra information in the form of key-value pairs called parameters) 
+(Parameters start with a question mark (?) and are separated with an ampersand (&).)
+- Fragment or named anchor: 
+(#00h01m15s (skip to 1 minute and 15 seconds into the video) refer to an internal section within a web document)
+
+
+--------------------
+HTTP Request Methods
+- defines different request methods to indicate the desired action to be performed on the identified resource 
+
+GET 
+- method retrieves data from the specified resource
+
+HEAD 
+- method asks for a response identical to that of a GET request, but without the response body
+
+POST 
+- method creates data on the specified resource
+
+PUT 
+- method request is used to update data on the specified resource
+
+DELETE 
+- method deletes the specified resource
+
+-----------------------------------------
+HTTP Request and Response Packets Capture
+
+- HTTP GET requests contain user agent information to help web server identify web browser and configuration of client
+- user agent information that is sent by web browser is used by web server to identify browser, browser version, OS that host is running on
+- HTTP header fields are used to define the operating parameters of an HTTP transaction
+- core set of the HTTP header fields is standardized in RFCs 7230, 7231, 7232, 7233, 7234, and 7235
+
+Stream Content-
+------------------------------------------------------------------------------------:
+GET / HTTP/1.1								  	    :
+User-Agent: wget/1.13.4 (1inux-gnu)						    :
+Accept: */*									    :
+Host: 10.3.1.200								    :
+connection: Keep-Alive								    :
+										    :
+HTTP/1.1 200 OK									    :
+Date: Mon, 12 oct 2015 14:24:57 GMT						    :
+Server: Apache/2.2.22 (Ubuntu)							    :
+Last-Modified: Fri, 15 Mar 2013 14:35:26 GMT ETag: "45a28-b1-4d7f78cd62147"	    :
+Accept-Ranges: bytes 								    :
+Content-Length: 177								    :
+Vary: Accept-Encoding								    :
+Keep-Alive: timeout-5, max-100 							    :
+Connection: Keep-Alive								    :
+Content-Type: text/html								    :
+									            :
+<html><body> <h1>It works!</h1> 						    :
+<p>This is the default web page for this server.</p> 			            :
+<p>The web server software is running but no content has been added, yet.</p> 	    :
+</body></html>									    :
+------------------------------------------------------------------------------------:
+
+HTTP Request:
+
+GET / HTTP/1.1: 
+- indicates that the client (in this case, "wget/1.13.4 (1inux-gnu)") is making a GET request for the root ("/") of a web server using HTTP version 1.1
+User-Agent: wget/1.13.4 (1inux-gnu): 
+- typically identifies the client software and its version
+Accept: */*: 
+- indicates that the client can accept any type of content
+Host: 10.3.1.200: 
+- specifies the target server's IP address or domain name
+Connection: Keep-Alive: 
+- client wants to keep the connection alive for possible future requests
+
+HTTP Response:
+
+HTTP/1.1 200 OK: 
+- indicates that the server is responding with an HTTP 200 OK status, which means the request was successful
+Date: Mon, 12 Oct 2015 14:24:57 GMT: 
+- specifies the date and time the response was generated
+Server: Apache/2.2.22 (Ubuntu): 
+- identifies the web server software and its version
+Last-Modified: Fri, 15 Mar 2013 14:35:26 GMT: 
+- indicates the date and time when the requested resource was last modified
+ETag: "45a28-b1-4d7f78cd62147": 
+- An ETag (Entity Tag) is a unique identifier for the resource, which can be used for caching purposes
+Accept-Ranges: bytes: 
+- tells the client that the server supports byte-range requests for the resource
+Content-Length: 177: 
+- indicates the length of the response content in bytes
+Vary: Accept-Encoding: 
+- specifies that the response might vary based on the encoding accepted by the client
+Keep-Alive: timeout-5, max-100: 
+- defines the server's keep-alive settings, indicating a timeout of 5 seconds and a maximum of 100 connections
+Connection: Keep-Alive: 
+- tells the client that the server wants to keep the connection alive for potential future requests
+Content-Type: text/html: 
+- specifies that the response contains HTML content
+
+
+
+-----------------
+HTTP Status Codes
+
+- classified by a numerical status code 
+- indicate the reasons behind successful and failed HTTP requests 
+
+1xx are Informational
+2xx are Success
+3xx are Redirection
+4xx are Client Error
+5xx are Server Error
+
+Common status codes:
+
+100 = Continue: (server has received the request headers and the client should proceed to send the request body)
+200 = OK: (processing of the request that was sent by the client was successful)
+301 = Moved Permanently: (resource has permanently moved to a different URI)
+302 = Found: (requested resource resides temporarily under a different URI.)
+307 = Temporarily Moved: (request should be repeated with another URI)
+401 = Unauthorized (Authentication Required): (request first requires authentication with the server.)
+403 = Forbidden: (Access is denied)
+404 = Not Found: (server cannot find the requested URI)
+407 = Proxy Authentication Required: (request first requires authentication with the proxy)
+500 = Internal Server Error: (unexpected condition is encountered, no other specific message is suitable)
+
+
+
+------------
+HTTP Cookies
+- HTTP cookie is a small piece of data that is sent from the web server and stored in the user's web browser while the user is browsing
+- used by the web server to remember stateful information (such as items added in the shopping cart in an online store)
+- cookies are passed between web server and web browser using Set-Cookie HTTP header field in HTTP response, and Cookie HTTP header in 
+
+- web server may want to remember certain information about the user's session or preferences
+- the server sends a "Set-Cookie" HTTP header in the response 
+------------------------------------------------------------------------------------------------------------------:
+HTTP/1.1 200 OK													  :
+Content-Type: text/html												  :
+Set-Cookie: username=johndoe; expires=Sat, 31 Dec 2023 23:59:59 GMT; path=/; domain=example.com; secure; HttpOnly :
+------------------------------------------------------------------------------------------------------------------:
+In this example, the server is setting a cookie named "username" with the value "johndoe" and several attributes:
+expires: (cookie is set to expire on a specific date and time)
+path: (specifies the URL path to which the cookie applies)
+domain: (indicates the domain to which the cookie is associated)
+secure: (ensures that the cookie is only sent over HTTPS connections)
+HttpOnly: (prevents client-side scripts from accessing the cookie)
+
+- user's browser makes subsequent requests to same website, it sends back cookies associated with that website in  
+"Cookie" header of the HTTP request. Here's an example:"Cookie" header of the HTTP request. Here's an example:
+--------------------------------------------:
+GET /profile HTTP/1.1			    :
+Host: example.com			    :
+Cookie: username=johndoe; sessionID=abc123  :
+--------------------------------------------:
+- browser sends two cookies, "username" and "sessionID," to the server
+- these cookies allow the server to recognize and remember the user's identity and session
+
+
+Example 2
+- web browser sends its first HTTP request to www.example.org:
+------------------------------:
+ GET /index.html HTTP/1.1     :
+Host: http://www.example.org  :
+------------------------------:
+The web server responds with two Set-Cookie headers:
+------------------------------------------------------------------------:
+HTTP/1.0 200 OK							:
+Content-type: text/html							:
+Set-Cookie: theme=light							:
+Set-Cookie: sessionToken=abc123; Expires=Wed, 01 Jun 2020 10:00:00 GMT  :
+------------------------------------------------------------------------:
+The web browser sends another HTTP request to visit the ccna.html page on the website. 
+This HTTP request contains the two cookies that the web server instructed the web browser to set:
+-------------------------------------------:
+GET /ccna.html HTTP/1.1			   :
+Host: http://www.example.org		   :
+Cookie: theme=light; sessionToken=abc123   :
+-------------------------------------------:
+
+- sessionToken cookie is a piece of data that can be used by the web server to identify a particular session
+- examining sessionToken cookie, the web server knows that this second HTTP request is related to the previous HTTP request
+
+
+------------
+HTTP Referer
+- referer is another HTTP request header
+- referer is the address of the previous web page from which a link to the currently requested page was followed
+
+------------------------------------------------------------------------------------------:
+Request URL: http://tags.tiqcdn.com/utag/cisco/home/prod/utag.59.js?utv-ut4.39.201610202  :
+Request method: GET									  :
+										          :
+Request headers (0.309 KB)								  :
+Host: "tags.tiqcdn.com"									  :
+User-Agent: "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0"    :
+Accept: "*/*"										  :
+Accept-Language: "en-US,en;q=0.5"							  :
+Accept-Encoding: "gzip, deflate"							  :
+Referer: "http://www.cisco.com/"							  :
+Connection: "keep-alive"								  :
+------------------------------------------------------------------------------------------:
+- HTTP GET request where the referer is http://www.cisco.com. 
+- the user clicked a link from the www.cisco.com home page to access another web page
+
+
+=======================================================================================================================================
+=======================================================================================================================================
+----------------
+HTTPS Operations
+- HTTP is unencrypted, it does not protect user data from interception 
+- All data that is sent over HTTP is in plaintext and can be read by anyone that manages to break into the connection 
+- TLS or SSL connection between a client and server is set up by the TLS or SSL handshake
+- HTTPS provides authentication of web server, digital certificate allows browser to identify web server and to trust it, digital certificate needs to be signed by a certificate authority that is trusted by the web browser
+
+HTTPS basic operations include the following:
+
+HTTPS URLs 
+- begin with https:// 
+- use TCP port 443 by default
+
+
+------
+HTTP/2 
+- low-latency transport of content over www
+- RFC 7540
+- supports all core features of HTTP/1.1, but is more efficient in several ways
+- uses same HTTP, HTTPS URI schemes 
+- same default port numbers (80 for HTTP URIs and 443 for HTTPS URIs)
+
+--------------
+HTTP/2 Streams
+- key feature is HTTP streams (allows concurrent multiplexing of different HTTP request/response exchanges onto same TCP connection)
+- stream = independent, bidirectional sequence of frames that are exchanged between client and server within an HTTP/2 connection
+- streams can be closed by either the client or the server
+- streams are identified by integers assigned to streams by the endpoint initiating the stream
+- streams that are initiated by a client must use odd-numbered identifiers
+- streams that are initiated by server must use even-numbered identifiers
+- streams can be closed by either client or the server
+
+- stream multiplexing is achieved by associating each HTTP request/response exchange with its own stream
+- streams are largely independent of each other, so a blocked or stalled request or response does not prevent progress of other streams. 
+- flow-control scheme ensures that streams on same connection do not destructively interfere with each other 
+- flow control is used for both individual streams and the TCP connection as a whole
+- client can assign a priority for a new stream by including prioritization information in headers frame that opens stream
