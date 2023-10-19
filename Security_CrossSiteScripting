@@ -1,1 +1,33 @@
+XSS 
+Cross-Site Scripting
+- act of maliciously causing a script, typically JavaScript, to execute in browser of a user visiting a website  
+- important item to remember is that victim is not aware of a malicious XSS attack has taken place on their system
+
+The three different types of cross-site scripting (XSS) attacks are: 
+- Stored
+- Document Object Model (DOM)
+- Reflected
+
+Stored (persistent XSS): 
+- attacker embeds malicious code within page that is stored on web server itself, which is usually accomplished through submitting input to forms that post input to a website, such as comment boxes and message boards 
+- if server fails to properly sanitize input, the attacker code will be posted to the page and displayed to all visiting users
+- this method results in a persistent XSS attack
+
+Document Object Model (DOM): 
+- threat actor sends a message to a client containing a JavaScript URL embedded with malicious script tags
+- client clicks on URL and client's web browser establishes an HTML connection to a vulnerable or exploited website
+- when a web browser loads a web page, it will create a DOM
+- DOM is a class of JavaScript that defines objects within HTML elements for use by web browser
+- due to vulnerability within HTML page on web site, a threat actor can modify browser's DOM in an attempt to extract sensitive information or execute malicious code
+- client's web browser connects to a vulnerable or exploited website that is using a vulnerable DOM route handler, malicious script tags can be injected and automatically executed on client's web browser
+- website is rendered properly within client's web browser, but client is unaware of actions of malicious script tags that are running on browser
+- malicious script tags can be manipulated by the threat actor to perform nefarious actions, such as sessions cookie hijacking, site redirection, local file manipulation, and malicious code execution
+
+Reflected (nonpersistent XSS): 
+- attacker includes HTML code within a link to a web address, knowing that linked page will fail to sanitize included HTML code, which is often seen on pages that display query that a user entered
+- user themselves are submitting data and server is only displaying it back, without code being stored permanently
+- user would need to click the link containing HTML code again. 
+- entering the URL to the page alone would not be sufficient to cause code execution 
+- attacker can append the user login session cookie onto the URL of an image being requested from an external site. 
+- armed with cookie of the user, the attacker could then potentially masquerade asthat user, gaining full permissions of that user on site
 
