@@ -1,1 +1,45 @@
+SQL 
+Structured Query Language 
+- used to query, operate, and administer relational database management systems such as Microsoft SQL Server, Oracle, or MySQL
+- general use of SQL is consistent across all database systems that support it, but intricacies exist, particular to each system
+- database systems are commonly used to provide back-end functionality to many types of web applications 
+- upport of web applications, user-supplied web input data is often used to dynamically build SQL statements that interact directly with a database
+
+SQL Injection 
+- SQL injection attack involves the alteration of SQL statements that are used within a web application by using attacker-supplied data
+- insufficient input validation in web applications can expose them to SQL injection attacks
+- effects of a successful SQL injection attack vary based on the targeted application and how that application processes the user-supplied data
+
+User -------user input-------> Web Server --------sql query--------> DataBase
+User <----sql query result---- Web Server <----sql query result----- Database
+
+SQL functions include the following:
+- create databases and tables (data in a database is stored in tables)
+- table is a collection of related data entries and it consists of columns and rows
+(Columns contain the column name, data type, and any other attributes for the column)
+(Rows contain the records or data for the columns)
+- define the data in the database and manipulate that data
+- access the data in the database
+- set the database permissions
+
+Exfiltrating data:
+SELECT [fields] FROM [table] [...]
+
+Modifying data:
+UPDATE [table] SET [field] = [value] WHERE [condition]
+INSERT INTO [table] VALUES [...]
+TRUNCATE TABLE [table]
+
+Modifying database structure:
+DROP TABLE [table]
+ALTER TABLE [table] [...]
+DROP DATABASE
+
+SQL Injection Example 
+- web page that requests a username and password will accept input into those two fields
+- Once input is supplied, application reaches out to back-end database to determine if data exists and if it is accurate
+- in an SQL injection attack, the malicious actor supplies input that includes specially crafted data that will contain special code that, when interpreted by the application, will manipulate the database in some way 
+- instead of simply comparing the username and password with database to authorize entry, database will run code and behave in a manner that is desired by actor, such as displaying all its contents
+- depending on web application, and how it processes attacker-supplied data before building an SQL statement, a successful SQL injection attack can have far-reaching implications
+- potential consequences of successful SQL injection attack include, bypassing of authentication, disclosing of confidential information, distribution of malicious code to endpoints
 
