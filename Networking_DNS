@@ -240,5 +240,39 @@ DNS Tunneling
 - and looking for unusual hostnames are a few techniques to discover instances of DNS tunneling
 
 
+-------
+DNS Log
+- besides normal security practices such as deploying firewalls, IPS sensors, antivirus, web security appliances, and so on, many SOCs are increasingly looking to network as data source
+- examining NetFlow records and DNS activities
+- DNS query logging is disabled by default on most DNS servers and should be enabled
+
+- common to see malware CnC use DGAs or fast-flux DNS to evade IP address-based detection and blocking
+- to keep up with the latest attacks and attackers, analysts must have view into DNS activity on network 
+- DNS logs are helpful in reconstructing security incident because they can log DNS queries and responses received
+
+- when client wants to access service by name, it must resolve that name into IP address
+- client sends request for name to recursive name server and that server will retrieve information and send it back to client
+From a security perspective, there are two interesting aspects to this activity
+- first is names clients are requesting and second is Internet hosts that are providing services for any given name 
+- you want to know who is looking up service (DNS queries) and you also want to know who is providing a service (DNS answers)
+
+Familiarity exists with common DNS requests such as requesting IP address of http://www.cisco.com
+- but what kind of request would require investigation ? 
+- malware could encode command as sub-domain part of DNS lookup for domain where name server is under control of attacker
+- DNS lookup for long-string-of-exfiltrated-data.example.com would be forwarded to name server of example.com, which would receive long-string-of-exfiltrated-data and reply to malware with coded response 
+
+- instead of encoding command as part of the sub-domain, data to be exfiltrated could be encode as part of the sub-domain
+Multigrain is point-of-sale malware that specializes in stealing credit and debit card information
+- dojfgj.com is known malicious domain by which Multigrain malware exfiltrates stolen credit card numbers, which are some of its associated sub-domains: 
+cg3.7s3bnxqmavqy7sec.dojfgj.com, 
+ivc.v55pgwcschs3cbee.dojfgj.com,
+...
+- there are hundreds of sub-domains for each domain, but each unique sub-domain may be only accessed once
+
+
+
+
+
+
 
 
