@@ -1,1 +1,335 @@
+Logs 
+
+ELSA = Open Source centralized syslog compiler, search querying tool 
+- provides functions that are typically found within most of commercially available SIEM products
+- provides log ingest, normalization, storage functionality
+- SIEM products, such as from Intel Security, Splunk, LogRhythm, and IBM, provide additional functionality
+- overall goal of ELSA = provide analysts with capability to correlate network and host activity by inspecting relevant syslog information from multiple network resources
+
+- syslog entry from the Security Onion server:
+ Jan  6 07:37:01 so CRON[22073]: (root) CMD (find /var/www/so/capme/pcap/*.pcap -mmin +5 -delete >/dev/null 
+2>&1) 
+
+- sample of a CISCO IOS syslog message format:
+ seq no:timestamp: %facility-severity-MNEMONIC:description 
+
+- Stamps log messages with sequence number
+- Date and time of message or event
+- facility to which message refers (for example, SNMP, SYS, and so forth)
+- facility can be hardware device, protocol, or module of system software
+- denotes source or cause of system message
+- defined list of facility codes may be found in the RFC 3164 reference document: https://www.ietf.org/rfc/rfc3164.txt
+- single-digit code from 0 to 7 that is severity of message with 0 having severity of Emergency and 7 having severity of Debug
+
+MNEMONIC 
+- text string that uniquely describes message
+- Text string containing detailed information about event being reported
+
+- analysts can use syslog as means to help correlate security alerts that are found in other security monitoring tools against log entries that are found in syslog file
+- ELSA's search engine functionality is very similar to how Google's search engine operates providing analyst ability to perform powerful queries across large volume of data that are typically seen on a given day
+- analyst can use various types of search operators such as Boolean operators, range operators, and directives to help isolate data points that analyst is focused on
+
+Log Data Search
+ELSA
+- ELSA provides log ingest, normalization, storage functionality, front-end user interface for SOC analysts to query, view events, security incidents from various syslog-based devices on network
+- Analyst can use various types of search operators such as Boolean operators, range operators, and directives to help isolate data points that analyst is focused on
+- ELSA search query syntax attributes and examples can be obtained in ELSA documentation 
+
+
+Operator                Meaning
+Keyword                 Query must include the keywords
+-Keyword                Query must not include the keyword
+OR Keyword              Query may include the keyword
+
+- figure shows the result of a search using Boolean operators: http://www.cisco.com OR http://www.cisc0.com:
+
+ELSA range operators 
+- used to filter search results
+- range operators must include keyword in addition to range operator
+- if looking for hosts within specific IP address range, following search may be performed: class=BRO_HTTP “-“ site:www.cisco.com –host>10.10.6.10 –host<10.10.6.20 
+- above example constructs search between hosts (only hosts whose IP addresses fall between 10.10.6.10 and 10.10.6.20) that went to http://www.cisco.com.
+- directives can be used to limit or return a specific number of results from query. 
+- searching for specific signature that may have it for IDS rule, could be constructed as: 72.163.4.161 sig_msg:"NETAPI Exploit" groupby:dstip 
+The directive is identified by groupby:
+- dstip, which is similar to SQL groupby command and returns unique values for given element 
+- in this example, groupby:dstip is used to group by destination IP address
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------
+System Logs
+- Linux systems provide rich logging functionality
+- operating system events of all kinds are logged in a central location
+- also, most applications will log events to these same locations or dedicated log files
+- when you investigating issue on Linux-based system, log files are one of first places you should visit for information on what transpired
+- logging is handled by dedicated logging process called syslogd
+- more recent versions of Linux use variant of syslogd that is called rsyslogd, provides all same functionality of syslogd, in addition to several extensions that add functionality totraditional syslog capabilities
+
+Log File Locations and Log Files
+- file system location for system events is the /var/log directory
+- Find a series of files that contain log data for various event types
+- Not all files in the /var/log directory are used by rsyslogd
+- Some may come from applications with dedicated logging facilities
+- rsyslogd configuration file lists all files that it uses for logging
+
+- primary log file on most Linux systems is /var/log/messages or /var/log/syslog, which is because a default rsyslogd configuration file has been configured in such a way that it will match with 
+many of events that are produced by the system
+- configuration file ultimately determines which files get used for what purpose 
+- other logging option is to send logs to console, which is often used when an event that requires system user’s attention is generated
+
+- you can also configure your local syslog events to forward to remote syslog server or security information and event management (SIEM) tool 
+- organizations will often aggregate logs from important hosts around enterprise in one central place, which makes it easier to correlate events from different sources to try 
+to surface patterns of activity that may indicate compromise or security policy violation
+
+------------------
+Configuring Syslog
+- Syslog configuration takes place by way of the /etc/syslog.conf file or /etc/rsyslog.conf in more recent Linux installations. Sometimes, systems running rsyslogd may split the configuration over multiple files. The primary configuration file, /etc/rsyslog.conf, specifies additional files to include by way of a directive. 
+
+- configuration file consists of comments with sample configurations and notes 
+- also contains series of rules that define event types and where their logs should go
+- rule consists of selector to indicate source of event and action to indicate where to send event
+
+- sample rules from arsyslogd configuration file:
+auth,authpriv.*            /var/log/auth.log
+*.*;auth,authpriv.none     -/var/log/syslog
+cron.*                     /var/log/cron.log
+daemon.*                  -/var/log/daemon.log
+kern.*                    -/var/log/kern.log
+lpr.*                     -/var/log/lpr.log
+mail.*                    -/var/log/mail.log
+user.*                    -/var/log/user.log
+
+---------------
+Selector Syntax
+- selector is first column, which consists of two components that are separated by a dot (.): 
+facility 
+severity
+
+facility 
+- indicates component reporting event
+
+severity 
+- establishes priority for event
+- following severity labels are listed from least severe to most severe:
+Debug: Debug information from running processes
+Info: Simple informational messages
+Notice: A condition that may require some attention
+Warn: A warning
+Err: An error condition
+Crit: A critical condition
+Alert: A condition that requires immediate attention
+Emerg: An emergency condition
+
+The following are examples:
+mail.info: Translates to the mail facility with a severity of info. This format will include severity of info or greater (notice, warn, err …).
+=mail.info: Translates to the mail facility with a severity of info. This format means only include the info severity.
+
+- you can list multiple facilities in front of dot
+- each facility is separated with comma
+auth,authpriv.*: = Translates to facility auth and authpriv with a priority of any
+
+- you can list multiple facility.severity pairs that are separated by semi-colons
+*.*;auth,authpriv.none: = Translates to any facility with any severity, except auth and authpriv facilities with no severity, everything except auth and authpriv
+
+-------------
+Action Syntax
+- action portion of syslog rule indicates which file should receive event that is based on facility and severity that is specified in selector
+
+mail.info /var/log/maillog: 
+- translates to: Send events with facility of mail and severity of info or greater to /var/log/maillog file
+
+- some action entries begin with dash character, which is remnant from older versions of syslogd that performed sync after writing event to log file 
+- in more recent syslog implementations, this functionality is disabled for performance reasons so dash is essentially meaningless
+See the example that follows:
+-/var/log/messages: The dash has no impact.
+
+- Alerts can also be directed to console instead of a file, which is good way of getting user’s attention if situation warrants it
+kern.* /dev/console: 
+- configuration sends alerts from kernel facility with any priority to console
+
+#  /etc/rsyslog.conf    Configuration file for rsyslog
+#   
+#           For more information see   
+#           /usr/share/doc/rsyslog-doc/html/rsyslog_conf.html  
+ ...  
+ ...   
+auth,authpriv.*             /var/log/auth.log   
+*.*;auth,authpriv.none      -/var/log/syslog  
+ #cron.*                     /var/log/cron.log   
+daemon.*                    -/var/log/daemon.log   
+kern.*                      -/var/log/kern.log   
+lpr.*                       -/var/log/lpr.log   
+mail.*                      -/var/log/mail.log   
+user.*                      -/var/log/user.log
+# 
+# Logging for the mail system.  Split it up so that   
+# it is easy to write scripts to parse these files.   
+#   mail.info                  -/var/log/mail.info   
+mail.warn                  -/var/log/mail.warn   
+mail.err                   /var/log/mail.err  
+#   
+# Logging for INN news system.   
+#  
+news.crit                  /var/log/news/news.crit   
+news.err                   /var/log/news/news.err   
+news.notice                -/var/log/news/news.notice   
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------
+Windows Event Viewer
+- microsoft management console snap-in that enables to browse, manage event logs 
+- indispensable tool for monitoring health of systems and troubleshooting issues
+- you need to locate events that are related to the problem, regardless of which event log they appear in
+- Event Viewer enables to filter for specific events across multiple logs, and display all events that are potentially related to issue you are investigating
+
+Windows includes two categories of event logs: 
+1.Windows Logs
+2.Application and Services Logs
+
+To start Event Viewer using the Windows interface:
+- click the Start button
+- click Control Panel
+- click Administrative Tools 
+- double-click Event Viewer 
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Firewall Log
+- System log messages from transit network devices can provide insight into and context for security events that may not be available from other sources
+- This insight aids in determining validity and extent of incident
+- within context of security incident, analysts can use firewall syslog messages to understand communication relationships, timing, and, sometimes, the attacker's motives and/or tools
+- firewall logs should be used with other forms of network security monitorings that are in place
+- firewall ACL-denied log messages are often of interest because they may indicate potential unauthorized attempts to access network
+
+- Cisco ASA syslog example is shown below, 
+- 209.165.200.233 outside host attempts to connect to different dmz hosts over different ports, and was denied by ACL named "outside_access_in." 
+- log messages have same source address and are destined to different destination ports, which could indicate footprinting or port scanning attempt from 209.165.200.233 outside host to hosts in dmz
+- if IPS is placed behind firewall, then IPS will not be able to see this port scanning traffic
+
+Aug 13 2019 11:00:11: %ASA-4-106100: access-list outside_access_in denied tcp outside/209.165.200.233(23000) -> dmz/192.168.1.1(22) hit-cnt 1 ......
+Aug 13 2019 11:00:12: %ASA-4-106100: access-list outside_access_in denied tcp outside/209.165.200.233(23001) -> dmz/192.168.1.1(23) hit-cnt 1 ......
+Aug 13 2019 11:00:13: %ASA-4-106100: access-list outside_access_in denied tcp outside/209.165.200.233(23002) -> dmz/192.168.1.1(53) hit-cnt 1 ......
+Aug 13 2019 11:00:14: %ASA-4-106100: access-list outside_access_in denied tcp outside/209.165.200.233(23003) -> dmz/192.168.1.1(80) hit-cnt 1 ......
+
+<etc>
+
+Aug 13 2019 11:02:51: %ASA-4-106100: access-list outside_access_in denied tcp outside/209.165.200.233(24000) -> dmz/192.168.1.2(22) hit-cnt 1 ......
+Aug 13 2019 11:02:52: %ASA-4-106100: access-list outside_access_in denied tcp outside/209.165.200.233(24001) -> dmz/192.168.1.2(23) hit-cnt 1 ......
+Aug 13 2019 11:02:53: %ASA-4-106100: access-list outside_access_in denied tcp outside/209.165.200.233(24002) -> dmz/192.168.1.2(53) hit-cnt 1 ......
+Aug 13 2019 11:02:54: %ASA-4-106100: access-list outside_access_in denied tcp outside/209.165.200.233(24003) -> dmz/192.168.1.2(80) hit-cnt 1 ......
+
+<etc> 
+
+
+- other common firewall log messages include tracking of NATs and connection events through firewall
+- in Cisco ASA appliance syslog example that is shown below, 209.165.200.236 outside host initiated TCP connection to 10.1.1.1 dmz host port 80
+Aug 14 2019 12:38:51 %ASA-6-302013: Built inbound TCP connection 855 for outside:209.165.200.236/1107 (209.165.200.236/1107) to dmz:10.1.1.1/80 (10.1.1.1/80) 
+
+- InCisco ASA appliance syslog example that is shown below, the 172.16.1.1 inside host private source IP address is dynamically translated to the public IP address of 198.51.100.1 on the outside interface.
+ %ASA-6-305009: Built dynamic translation from inside:172.16.1.1 to outside:198.51.100.1 
+
+- all firewall log messages can be useful in certain circumstances, generally small subset of log messages will initially provide most benefit
+- after these events have been examined, administrators can expand scope of their analysis by searching for additional details
+- following table summarizes few of other common Cisco ASA log messages and their severity level
+- example: %ASA-3-106014 log, 3 is severity level
+
+
+Syslog Mnemonic        Description
+%ASA-3-106014          Deny inbound icmp src interface_name: IP_address dst interface_name: IP_address (type dec, code dec) 
+                       The ASA denied any inbound ICMP packet access.
+
+%ASA-6-106015          Deny TCP (no connection) from IP_address/port to IP_address/port flags tcp_flags on interface interface_name
+                       ASA discarded TCP packet that has no associated connection in ASA connection table
+                       ASA looks for SYN flag in the packet, which indicates request to establish new connection 
+                       If SYN flag is not set, and there is no existing connection, ASA discards packet
+
+%ASA-1-106021          Deny protocol reverse path check from source_address to dest_address on interface interface_name
+                       Someone is attempting to spoof IP address on inbound connection 
+                       Unicast RPF, also known as reverse route lookup, detected packet that does not have source address that is represented by a route in the ASA routing table
+
+%ASA-6-302014          Teardown TCP connection id for interface: real-address / real-port  [(idfw_user)] to  interface: real-address / real-port [(idfw_user)] 
+                       duration  hh:mm:ss bytes  bytes [ reason ] [( user )] 
+                       TCP connection between two hosts was deleted
+
+%ASA-6-302016          Teardown UDP connection number for interface : real-address / real-port [(idfw_user)] to  interface : real-address / real-port  [(idfw_user)] duration  hh:mm:ss bytes  bytes [(user)]  
+                       UDP connection between two hosts was deleted.
+
+%ASA-6-302021          Teardown ICMP connection for faddr { faddr |  icmp_seq_num} [(idfw_user)] gaddr { gaddr |  cmp_type } laddr  laddr  [(idfw_user)] 
+                       ICMP session is removed in fast-path when stateful ICMP is enabled using inspect icmp command
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Web Proxy Log
+- malware is often spread using vulnerabilities in web browsers and malware may also use HTTP/HTTPS for CnC communication
+
+Many web proxies, such as the Cisco Web Security Appliance (WSA), can also decrypt SSL/TLS traffic so that it can be inspected. 
+Today, much of the web traffic of Facebook, Google, and so on, uses HTTPS instead of HTTP to provide an encrypted web connection.
+Most web proxy server logging is enabled by default to collect HTTP/HTTPS related log data.
+Web proxy logs allow the security analysts to see what websites are accessed by the networked hosts. 
+Web proxy provides precise logging of browsing sessions and can be used to help investigate web-based attacks. 
+For example, if there are many POST commands going to an unknown site with a bad reputation, then data exfiltration may be assumed. 
+POST commands, however, are also normal because queries to web applications can be submitted through POST commands. 
+GET commands to a suspicious website with a bad reputation containing .exe files could be a sign of droppers. 
+A dropper is a program that has been designed to install some sort of malware on the victim's machine.
+
+! Squid Web Proxy Access Log Example
+1265529266.756 261 192.168.1.45 TCP_TUNNEL/200 3511 CONNECT services.example.com:443 - HIER_DIRECT/209.165.200.235
+1265529273.873 8 192.168.1.254 TCP_HIT/200 1563 GET http://www.example.com/en-us/default/layout/previous.gif - NONE/- image/gif
+1265529273.881 12 192.168.1.254 TCP_HIT/200 2961 GET http://www.example.com/gif/lightning-100x60.jpg - NONE/- image/jpeg
+1364222662.246 90 192.168.0.6 TCP_MISS/200 619 GET http://www.example.com/pagead/conversion/? - DIRECT/172.16.0.152 image/gif
+1364222662.257 85 192.168.0.6 TCP_MISS/200 2347 GET http://www.example.com/pagead/conversion/? - DIRECT/172.16.0.152 image/gif
+1364222675.456 15 192.168.2.1 TCP_MISS/200 141159 GET http://spotlight2.com/system/logs/k1.exe 
+1364222689.532 77 192.168.2.1 TCP_MISS/200 36098 GET http://spotlight2.com/module/4c06c7a4c2bd4567139df133455 
+- output of some of Squid Web Proxy access log 
+- Squid is common Open Source web proxy server 
+- fields in entry describe HTTP request or response 
+- first field that is displayed is time stamp 
+- format that is used in this time stamp may be unfamiliar, but it is commonly used in UNIX and Linux environments 
+- this format is called epoch time, which is number of seconds since January 1, 1970, at midnight GMT
+- many online epoch converters can convert epoch time to more familiar format
+
+- fields in these entries show IP address of requester, along with HTTP method and URL that is contained within request
+- other fields focus on status of response, including HTTP status code (200 = OK for example) and whether response was cached or not
+TCP_HIT log means that HTTP response was cached in web proxy cache
+TCP_MEM_HIT log means that valid copy of requested object was in RAM memory, thus avoiding disk accesses
+TCP_TUNNEL log means that traffic was tunneled as raw binary to web server for which Squid is not able to act as proxy
+- in this case, Squid proxy does not understand or interpret tunneled traffic, for example, if tunneled traffic is encrypted HTTPS traffic
+- looking at last 2 log entries, an analyst may be suspicious of two GET requests for downloading .exe followed by suspicious filename
+- by using Virustotal, http://spotlight2.com maybe malicious site because 9 out of 68 URL scanners found that site to be malicious
+- further investigate by Googling system.log/k1.exe, k1.exe file is related to Vawtrak malware
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Email Proxy Log
+- many attack vectors use social engineering to take advantage of human weakness
+- email attacks continue to advance in their sophistication
+- malicious attachment to email message has been used as primary attack vector for some time now
+- attackers may send millions of email messages in hope that some people will be tricked into opening malicious attachment
+- security analysts should be aware of different logs available on email proxy
+
+example: 
+if malware was delivered using malicious email, security analyst will need to investigate email proxy logs to determine sender and receivers, time of malicious mail
+
+The following is an example of the Cisco ESA log:
+
+Thu Sep 18 16:17:38 2019 Info: Start MID 1653 ICID 16488
+Thu Sep 18 16:17:38 2019 Info: MID 1653 ICID 16488 From: <auto-notify@ups.com>
+Thu Sep 18 16:17:38 2019 Info: MID 1653 ICID 16488 RID 0 To: <any.one@mylocal_domain.com>
+Thu Sep 18 16:17:38 2019 Info: MID 1653 Message-ID '<BLU437-SMTP10E1315A60354F2906677B9DB70@phx.gbl>'
+Thu Sep 18 16:17:38 2019 Info: MID 1653 Subject 'Package delivery notification''
+Thu Sep 18 16:17:38 2019 Info: MID 1653 ready 8313 bytes from <auto-notify@ups.com>
+Thu Sep 18 16:17:38 2019 Info: MID 1653 matched all recipients for per-recipient policy DEFAULT in the inbound table
+Thu Sep 18 16:17:38 2019 Info: ICID 16488 close
+Thu Sep 18 16:17:39 2019 Info: MID 1653 interim verdict using engine: CASE spam negative
+Thu Sep 18 16:17:39 2019 Info: MID 1653 using engine: CASE spam negative
+Thu Sep 18 16:17:39 2019 Info: MID 1653 AMP file reputation verdict : MALWARE
+Thu Sep 18 16:17:39 2019 Info: Message aborted MID 1653 Dropped by amp
+Thu Sep 18 16:17:39 2019 Info: Message finished MID 1653 done  
+- example shows that Cisco ESA using Cisco Advanced Malware Protection (Cisco AMP) feature has detected and dropped malware attachment in email that is sent from auto-notify@ups.com
+
+The following example is another email proxy log where the email that was sent from user1@exampleone.com violated the DLP policy, resulting in the email being quarantined by the email proxy. DLP is used to ensure that end users do not send sensitive or critical information outside the corporate network.
+
+2019 Sep 28 16:13:51 ironport_server mail [info] splunk_maillogs:nopid Info: MID 6509657 quarantined to "Policy" (DLP violation)
+2019 Sep 28 16:13:51 ironport_server mail [info] splunk_maillogs:nopid Info: MID 6509657 DLP violation
+2019 Sep 28 16:13:38 ironport_server mail [info] splunk_maillogs:nopid Info: MID 6509657 ready 53 bytes from user1@exampleone.com
+2019 Sep 28 16:13:38 ironport_server mail [info] splunk_maillogs:nopid Info: MID 6509657 ICID 6237668 RID 0 To: johndoe@exampletwo.com 
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
